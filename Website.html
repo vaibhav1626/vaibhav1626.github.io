@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <!-- Use Tailwind CSS for rapid, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 800px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="container space-y-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-800">User Management System</h1>
+            <p class="mt-2 text-lg text-gray-500">
+                A simple example simulating a Python backend and a SQL database.
+            </p>
+        </div>
+
+        <!-- Simulated "SQL" Database and "Python" Backend -->
+        <div class="p-6 bg-gray-50 border border-gray-200 rounded-xl space-y-4">
+            <h2 class="text-2xl font-bold text-gray-700">Add a New User</h2>
+            <form id="addUserForm" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-150 ease-in-out p-2.5">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-150 ease-in-out p-2.5">
+                </div>
+                <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Add User
+                </button>
+            </form>
+        </div>
+
+        <!-- User List Section (HTML Frontend) -->
+        <div class="p-6 bg-gray-50 border border-gray-200 rounded-xl space-y-4">
+            <h2 class="text-2xl font-bold text-gray-700">Current Users</h2>
+            <ul id="userList" class="divide-y divide-gray-200">
+                <!-- User items will be injected here by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // This is a single-file application. The JavaScript below
+        // simulates the roles of a Python backend and a SQL database.
+
+        // --- Simulated "SQL Database" ---
+        // In a real application, this would be a database like PostgreSQL or MySQL.
+        // The data would be stored persistently on a server.
+        let users = [
+            { id: 1, name: 'Alice', email: 'alice@example.com' },
+            { id: 2, name: 'Bob', email: 'bob@example.com' }
+        ];
+        let nextId = users.length + 1;
+
+        // --- Simulated "Python Backend" Logic ---
+        // In a real application, these would be API endpoints on a server.
+        // A web framework like Flask or Django would handle these requests.
+
+        // Simulates a SELECT * FROM users; SQL query
+        async function getUsers() {
+            // Simulate a network delay
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log('SQL command executed: SELECT * FROM users;');
+                    resolve(users);
+                }, 500);
+            });
+        }
+
+        // Simulates an INSERT INTO users (name, email) VALUES (...) SQL query
+        async function addUser(name, email) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const newUser = { id: nextId++, name, email };
+                    console.log(`SQL command executed: INSERT INTO users (name, email) VALUES ('${name}', '${email}');`);
+                    users.push(newUser);
+                    resolve(newUser);
+                }, 500);
+            });
+        }
+
+        // --- HTML & JavaScript Frontend Logic ---
+        // This part runs in the user's browser. It's responsible for
+        // user interaction and displaying the data received from the backend.
+
+        const userList = document.getElementById('userList');
+        const addUserForm = document.getElementById('addUserForm');
+
+        // Function to render the user list on the page
+        function renderUsers(usersToRender) {
+            userList.innerHTML = ''; // Clear the current list
+            if (usersToRender.length === 0) {
+                userList.innerHTML = '<li class="p-4 text-center text-gray-500">No users found.</li>';
+                return;
+            }
+            usersToRender.forEach(user => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-4 bg-white rounded-lg shadow-sm';
+                li.innerHTML = `
+                    <div>
+                        <p class="text-lg font-semibold text-gray-800">${user.name}</p>
+                        <p class="text-sm text-gray-500">${user.email}</p>
+                    </div>
+                    <span class="text-xs text-gray-400">ID: ${user.id}</span>
+                `;
+                userList.appendChild(li);
+            });
+        }
+
+        // Handle the form submission
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+
+            const name = nameInput.value;
+            const email = emailInput.value;
+
+            // This is where the frontend "talks" to the simulated backend
+            const newUser = await addUser(name, email);
+            console.log('New user added:', newUser);
+
+            // Re-render the list with the updated data
+            const updatedUsers = await getUsers();
+            renderUsers(updatedUsers);
+
+            // Clear the form inputs
+            addUserForm.reset();
+        });
+
+        // Initial fetch and render of users when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            const initialUsers = await getUsers();
+            renderUsers(initialUsers);
+        });
+
+    </script>
+</body>
+</html>
